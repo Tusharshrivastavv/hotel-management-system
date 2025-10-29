@@ -27,6 +27,3 @@ This project focuses on applying OOPs principles like **Encapsulation, Inheritan
 | **Abstraction** | Abstract class `Person` defines a pure virtual function. |
 | **Composition** | `Hotel` class contains objects of `Room` and `Booking`. |
 
----
-
-## 🧩 Project Structure
