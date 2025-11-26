@@ -15,127 +15,83 @@ public:
     virtual void showDetails() = 0;
 };
 
-class Customer : public Person {
-    int customerId;
+class Client : public Person {
+    int clientId;
 public:
-    Customer(string n, int a, int id) : Person(n, a) {
-        customerId = id;
+    Client(string n, int a, int id) : Person(n, a) {
+        clientId = id;
     }
     void showDetails() override {
-        cout << "Customer ID: " << customerId << " Name: " << name << " Age: " << age << endl;
+        cout << "Client ID: " << clientId
+             << " | Name: " << name
+             << " | Age: " << age << endl;
     }
-    int getCustomerId() {
-        return customerId;
-    }
-};
-
-class Staff : public Person {
-    string position;
-public:
-    Staff(string n, int a, string p) : Person(n, a) {
-        position = p;
-    }
-    void showDetails() override {
-        cout << "Staff: " << name << " Age: " << age << " Position: " << position << endl;
+    int getClientId() {
+        return clientId;
     }
 };
 
-class Room {
-    int roomNumber;
-    string roomType;
-    bool isBooked;
+class Appointment {
+    int appointmentId;
+    string date;
+    Client client;
 public:
-    Room(int num, string type) {
-        roomNumber = num;
-        roomType = type;
-        isBooked = false;
+    Appointment(int id, string d, Client c) : client(c) {
+        appointmentId = id;
+        date = d;
     }
-    int getRoomNumber() {
-        return roomNumber;
-    }
-    string getRoomType() {
-        return roomType;
-    }
-    bool getIsBooked() {
-        return isBooked;
-    }
-    void bookRoom() {
-        isBooked = true;
-    }
-    void freeRoom() {
-        isBooked = false;
-    }
-    void showRoom() {
-        cout << "Room " << roomNumber << " " << roomType << " " << (isBooked ? "Booked" : "Available") << endl;
+    void showAppointment() {
+        cout << "Appointment ID: " << appointmentId
+             << " | Date: " << date
+             << " | Client: " << client.getClientId() << endl;
     }
 };
 
-class Booking {
-    int bookingId;
-    Customer customer;
-    Room* room;
+class Clinic {
+    vector<Appointment> appointments;
 public:
-    Booking(int id, Customer c, Room* r) : customer(c) {
-        bookingId = id;
-        room = r;
-    }
-    void showBooking() {
-        cout << "Booking ID: " << bookingId << " Customer: " << customer.getCustomerId()
-             << " Room: " << room->getRoomNumber() << " " << room->getRoomType() << endl;
-    }
-};
+    void bookAppointment(Client &c) {
+        string date;
+        cout << "Enter appointment date (DD/MM/YYYY): ";
+        cin >> date;
 
-class Hotel {
-    vector<Room> rooms;
-    vector<Booking> bookings;
-public:
-    Hotel() {
-        rooms.push_back(Room(101, "Single"));
-        rooms.push_back(Room(102, "Double"));
-        rooms.push_back(Room(201, "Deluxe"));
+        int id = appointments.size() + 1;
+        appointments.push_back(Appointment(id, date, c));
+
+        cout << "Appointment booked successfully.\n";
     }
-    void showRooms() {
-        for (int i = 0; i < rooms.size(); i++)
-            rooms[i].showRoom();
-    }
-    void bookRoom(Customer &c) {
-        int roomNo;
-        cout << "Enter room number: ";
-        cin >> roomNo;
-        for (int i = 0; i < rooms.size(); i++) {
-            if (rooms[i].getRoomNumber() == roomNo && !rooms[i].getIsBooked()) {
-                rooms[i].bookRoom();
-                bookings.push_back(Booking(bookings.size() + 1, c, &rooms[i]));
-                cout << "Room booked successfully." << endl;
-                return;
-            }
+
+    void showAppointments() {
+        if (appointments.empty()) {
+            cout << "No appointments yet.\n";
+            return;
         }
-        cout << "Room not available." << endl;
-    }
-    void showBookings() {
-        for (int i = 0; i < bookings.size(); i++)
-            bookings[i].showBooking();
+        for (auto &a : appointments)
+            a.showAppointment();
     }
 };
 
 int main() {
-    Hotel h;
-    Customer c1("Tushar", 21, 1);
-    Staff s1("Ravi", 30, "Manager");
+    Clinic clinic;
+    Client c1("Tushar", 21, 1);
 
     int choice;
     do {
-        cout << "\n1. Show Rooms\n2. Book Room\n3. Show Bookings\n4. Show Staff\n5. Exit\nEnter choice: ";
+        cout << "\n1. Book Appointment\n"
+             << "2. Show Appointments\n"
+             << "3. Show Client Details\n"
+             << "4. Exit\n"
+             << "Enter choice: ";
         cin >> choice;
+
         switch (choice) {
-            case 1: h.showRooms(); break;
-            case 2: h.bookRoom(c1); break;
-            case 3: h.showBookings(); break;
-            case 4: s1.showDetails(); break;
-            case 5: cout << "Exiting...\n"; break;
-            default: cout << "Invalid choice\n";
+            case 1: clinic.bookAppointment(c1); break;
+            case 2: clinic.showAppointments(); break;
+            case 3: c1.showDetails(); break;
+            case 4: cout << "Exiting...\n"; break;
+            default: cout << "Invalid choice!\n";
         }
-    } while (choice != 5);
+    } while (choice != 4);
 
     return 0;
 }
