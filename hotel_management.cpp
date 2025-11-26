@@ -15,83 +15,118 @@ public:
     virtual void showDetails() = 0;
 };
 
-class Client : public Person {
-    int clientId;
+class Customer : public Person {
+    int customerId;
 public:
-    Client(string n, int a, int id) : Person(n, a) {
-        clientId = id;
+    Customer(string n, int a, int id) : Person(n, a) {
+        customerId = id;
     }
     void showDetails() override {
-        cout << "Client ID: " << clientId
+        cout << "Customer ID: " << customerId
              << " | Name: " << name
              << " | Age: " << age << endl;
     }
-    int getClientId() {
-        return clientId;
+    int getId() {
+        return customerId;
     }
 };
 
-class Appointment {
-    int appointmentId;
-    string date;
-    Client client;
+class Staff : public Person {
+    string position;
 public:
-    Appointment(int id, string d, Client c) : client(c) {
-        appointmentId = id;
-        date = d;
+    Staff(string n, int a, string p) : Person(n, a) {
+        position = p;
     }
-    void showAppointment() {
-        cout << "Appointment ID: " << appointmentId
-             << " | Date: " << date
-             << " | Client: " << client.getClientId() << endl;
+    void showDetails() override {
+        cout << "Staff: " << name 
+             << " | Age: " << age 
+             << " | Position: " << position << endl;
     }
 };
 
-class Clinic {
-    vector<Appointment> appointments;
+class Room {
+    int roomNumber;
+    bool booked;
 public:
-    void bookAppointment(Client &c) {
-        string date;
-        cout << "Enter appointment date (DD/MM/YYYY): ";
-        cin >> date;
+    Room(int num) {
+        roomNumber = num;
+        booked = false;
+    }
+    int getNumber() {
+        return roomNumber;
+    }
+    bool isBooked() {
+        return booked;
+    }
+    void book() {
+        booked = true;
+    }
+    void showRoom() {
+        cout << "Room " << roomNumber 
+             << " | " << (booked ? "Booked" : "Available") << endl;
+    }
+};
 
-        int id = appointments.size() + 1;
-        appointments.push_back(Appointment(id, date, c));
-
-        cout << "Appointment booked successfully.\n";
+class Hotel {
+    vector<Room> rooms;
+public:
+    Hotel() {
+        rooms.push_back(Room(101));
+        rooms.push_back(Room(102));
+        rooms.push_back(Room(201));
     }
 
-    void showAppointments() {
-        if (appointments.empty()) {
-            cout << "No appointments yet.\n";
-            return;
+    void showRooms() {
+        for (auto &r : rooms)
+            r.showRoom();
+    }
+
+    void bookRoom(Customer &c) {
+        int num;
+        cout << "Enter room number to book: ";
+        cin >> num;
+
+        for (auto &r : rooms) {
+            if (r.getNumber() == num) {
+                if (r.isBooked()) {
+                    cout << "Room already booked.\n";
+                    return;
+                }
+                r.book();
+                cout << "Room booked successfully by Customer ID: "
+                     << c.getId() << endl;
+                return;
+            }
         }
-        for (auto &a : appointments)
-            a.showAppointment();
+        cout << "Invalid room number.\n";
     }
 };
 
 int main() {
-    Clinic clinic;
-    Client c1("Tushar", 21, 1);
+    Hotel h;
+    Customer c1("Tushar", 21, 1);
+    Staff s1("Ravi", 30, "Manager");
 
     int choice;
     do {
-        cout << "\n1. Book Appointment\n"
-             << "2. Show Appointments\n"
-             << "3. Show Client Details\n"
-             << "4. Exit\n"
+        cout << "\n1. Show Rooms\n"
+             << "2. Book Room\n"
+             << "3. Show Customer Details\n"
+             << "4. Show Staff Details\n"
+             << "5. Exit\n"
              << "Enter choice: ";
         cin >> choice;
 
         switch (choice) {
-            case 1: clinic.bookAppointment(c1); break;
-            case 2: clinic.showAppointments(); break;
+            case 1: h.showRooms(); break;
+            case 2: h.bookRoom(c1); break;
             case 3: c1.showDetails(); break;
-            case 4: cout << "Exiting...\n"; break;
+            case 4: s1.showDetails(); break;
+            case 5: cout << "Exiting...\n"; break;
             default: cout << "Invalid choice!\n";
         }
-    } while (choice != 4);
+
+    } while (choice != 5);
 
     return 0;
 }
